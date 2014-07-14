@@ -438,6 +438,8 @@ data_inst.to_json(spec: :obj_arr)
 
 ### Glue Object
   Occasionally you may wish to create an object key for an attribute in the current context.
+  This may be useful if the client expects a nested structure for attributes stored in one 
+  object.
 
 ```ruby
 # Assume
@@ -453,8 +455,8 @@ json_spec :obj_glue do
 end
 
 # Result
-data_inst.to_json(spec: obj) #=> "{
-  #"key_a": {"node_name_a": "#{data_inst.node_name_a.to_json}"}
+data_inst.to_json(spec: obj) 
+#=> "{"key_a": {"node_name_a": "#{data_inst.node_name_a.to_json}"}
 ```
 
 ### Object Extension
