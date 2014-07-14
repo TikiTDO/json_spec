@@ -239,7 +239,7 @@ json_spec :basic_set do
 end
 
 # Result
-data_inst.from_json({custom: 1}, spec: :basic_imp) 
+data_inst.from_json({custom: 1}, spec: :basic_set) 
 # Same effect as: 
 #   data_inst.set_custom('name', 1, force: true)
 ```
@@ -256,7 +256,7 @@ json_spec :extended_set do
 end
 
 # Result
-data_inst.from_json({basic: 1, complex: 2, word: "hi"}, spec: :basic_imp) 
+data_inst.from_json({basic: 1, complex: 2, word: "hi"}, spec: :extended_set) 
 # Same effect as: 
 #   data_inst.set_basic(1)
 #   data_inst.set_attribute(:complex, "hi")
@@ -278,7 +278,7 @@ json_spec :basic_set do
 end
 
 # Result
-data_inst.from_json({typed: "raw_data"}, spec: :basic_imp) 
+data_inst.from_json({typed: "raw_data"}, spec: :basic_set) 
 # Same effect as: 
 #   data_inst.set_typed(Foo.from_json("raw_data"))
 ```
