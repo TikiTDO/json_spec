@@ -1,12 +1,11 @@
 source 'https://rubygems.org'
 
+## Development
 gem 'rake'
 gem 'pry'
 gem 'andand'
 
-# TODO: Fast Object to JSON encoder. Better performance than native JSON
-#gem 'yajl-ruby' 
-
+## Core
 gem 'json'
 
 ## Testing
