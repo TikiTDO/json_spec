@@ -11,12 +11,13 @@
   scripts, and to export to web-based API editors.
   
 ## Content
-1. [Usage](#usage)
+1. [Installation](#installation)
+2. [Usage](#usage)
   - [Initialization](#initialization)
   - [Schemas](#schemas)
   - [Export](#export)
   - [Import](#import)
-2. [API Overview](#api-overview)
+3. [API Overview](#api-overview)
   - [Basic Nodes](#basic-nodes)
       * [Dynamic Export](#dynamic-export)
       * [Typed Export](#typed-export)
@@ -36,6 +37,7 @@
       * [Object Import](#object-import)
   - [Overrides](#overrides)
   - [Conditionals/Execution break-in](#conditionalsexecution-break-in)
+4. [Benchmarks](#benchmakrs)
 
 ## Design Considerations
 
@@ -45,6 +47,24 @@
   > TODO: Allow for imports from views into the model classes. On access to the
   > to_json method compile all views for this object, and cache these values to
   > the model proper.
+
+## Installation
+
+Instructions necessary before you can prepend Sereth::JsonSpec in order to define a spec.
+
+### Ruby
+**Step 1:** Run `gem install sereth_json_spec`
+**Step 2:** 
+```ruby
+require 'rubygems'
+require 'sereth_json_spec'
+```
+
+### Rails
+**Step 1:** Edit Gemfile and add `gem 'sereth_json_spec'`
+**Step 2:** Run `bundle install`
+
+
 
 ## Usage
 ### Initialization
@@ -562,3 +582,43 @@ data_inst.to_json(spec: :cond)
   Redefining a node defined previously complete overrides it, even if done in the same 
   context. If complex node behaviour is required, please break it down into a proper
   series of extensions.
+
+## Benchmakrs
+
+JsonSpec is particularly effective when extracting complex information from Rails models and other similarly complex objects.
+
+For the purpose of this benchmark I am exporting a single ActiveRecord result, with the following structure:
+
+```ruby
+record.to_json #=> "{\"id\":7,\"name\":\"Test Name\",\"description\":\"Test Description\",\"image\":{\"url\":\"/uploads/68e25af9f4e52ab8a28d47a8ce3c707192ae3a3b.jpg\"},\"created_at\":\"2014-07-24T15:05:16.000Z\",\"updated_at\":\"2014-07-24T15:05:16.000Z\"}" 
+```
+
+The Record class was initialized with the following spec:
+
+```ruby 
+class Record << ActiveRecord::Base
+  prepend Sereth::JsonSpec
+  json_spec :all do
+    id
+    name
+    description
+    image do
+      url
+    end
+    created_at
+    updated_at
+  end
+end
+```
+
+```ruby
+# Scenario 1 - Active Support to_json
+Benchmark.measure { 10000.times{record.to_json}  } #=> 8.710000   0.150000   8.860000 (  8.876099)
+
+# Scenario 2 - Yajl Ruby
+encoder = Yajl::Encoder.new
+Benchmark.measure { 10000.times{encoder.encode record}  } #=> 8.890000   0.140000   9.030000 (  9.050803)
+
+# Scenario 3 - JsonSpec
+Benchmark.measure { 10000.times{record.to_json(spec: :all)}  } #=> 8.710000   0.150000   8.860000 (  8.876099)
+
